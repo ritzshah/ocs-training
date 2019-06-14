@@ -1,3 +1,3 @@
 git add .
-git commit -a -m "Updated Rook Lab Document"
+git commit -a -m "Updated"
 git push
