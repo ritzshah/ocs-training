@@ -547,8 +547,6 @@ digraph G {
 In this section you get to explore the Cluster that you just installed.
 
 . List all the projects in the cluster and try to understand what they do.
-ifeval::[{show_solution} == true]
-
 +
 [source,sh]
 ----
@@ -606,26 +604,8 @@ openshift-service-cert-signer                                Active
 openshift-svcat-apiserver-operator                           Active
 openshift-svcat-controller-manager-operator                  Active
 ----
-endif::[]
-
-. Check the `default` project. What is in the `default` project? What has changed from OCP 3 to OCP4?
-ifeval::[{show_solution} == true]
-+
-[source,sh]
-----
-oc get all -n default
-----
-+
-.Sample Output
-[source,texinfo]
-----
-NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
-service/kubernetes   ClusterIP   172.30.0.1   <none>        443/TCP   20h
-----
-endif::[]
 
 . Explore which CRDs are created by default in an OCP 4 cluster.
-ifeval::[{show_solution} == true]
 +
 [source,sh]
 ----
@@ -700,10 +680,8 @@ servicemonitors.monitoring.coreos.com                                    2019-03
 subscriptions.operators.coreos.com                                       2019-03-07T20:58:25Z
 tuneds.tuned.openshift.io                                                2019-03-07T21:00:13Z
 ----
-endif::[]
 
 . Find all the operators that are running in a newly installed OCP 4 cluster.
-ifeval::[{show_solution} == true]
 +
 [source,sh]
 ----
@@ -745,12 +723,9 @@ openshift-svcat-controller-manager-operator-569f4bc5bc-mhfbs
 prometheus-operator-954644495-rmp6q
 redhat-operators-78f5d67796-hm5qk
 ----
-endif::[]
 
 . Explore the *Cluster Version Operator* by using `oc rsh` to rsh into the pod and listing all the manitests in `/release-manifests`.
 . Then explore the contents of the files that make up the `cluster-image-registry-operator`. *DO NOT CHANGE ANY OF THESE FILES*. How does the Cluster Version Operator determine which file to apply first?
-
-ifeval::[{show_solution} == true]
 +
 [source,sh]
 ----
@@ -766,40 +741,17 @@ sh-4.2# cat /release-manifests/0000_70_cluster-image-registry-operator_02-rbac.y
 sh-4.2# cat /release-manifests/0000_70_cluster-image-registry-operator_04-operator.yaml
 sh-4.2# exit
 ----
-endif::[]
-
-. Explore the Cluster Image Registry Operator.
-.. Which project does the Operator run in?
-.. What pods run in that project?
-.. Is the Cluster Image Registry in the same project as the Operator?
-.. What is the Custom Resource that tells the Cluster Image Registry Operator what to do?
-.. What can you tell by looking at the `status` section of the CR?
-
-ifeval::[{show_solution} == true]
-+
-[source,sh]
-----
-oc project openshift-image-registry
-oc get pod
-oc get config
-oc describe config cluster
-----
-
-endif::[]
 
 . Explore the MachineConfig operator
 .. Which project does the operator run in?
 .. Which CRDs does the operator manage?
 .. What do these CRDs represent?
-
-ifeval::[{show_solution} == true]
 +
 [source,sh]
 ----
 oc project openshift-machine-config-operator
 oc get crd|grep machineconfiguration
 ----
-endif::[]
 
 .Rook and Kubernetes Architecture
 image::rook_diagram_3.png[]
