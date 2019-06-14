@@ -1,0 +1,667 @@
+Order `Services - Catalogs - OPENTLC Cloud Infrastructure Labs - RHHI.NEXT` using opentlc-beta-access
+
+== Information
+
+For this lab DHCP and DNS are provided via a VM
+
+=== DHCP configuration
+
+.File `dhcpd.conf`
+[%nowrap]
+----
+# dhcpd.conf
+#
+# Sample configuration file for ISC dhcpd
+#
+
+# option definitions common to all supported networks...
+option domain-name "kni.example.com";
+option domain-name-servers ns1.kni.example.com;
+
+default-lease-time 600;
+max-lease-time 7200;
+
+# Use this to enble / disable dynamic dns updates globally.
+#ddns-update-style none;
+
+# If this DHCP server is the official DHCP server for the local
+# network, the authoritative directive should be uncommented.
+#authoritative;
+
+# Use this to send dhcp log messages to a different log file (you also
+# have to hack syslog.conf to complete the redirection).
+log-facility local7;
+
+host master-0 {
+   hardware ethernet 2c:c2:60:1f:6d:00;
+   fixed-address 192.168.111.2;
+    option host-name "master-0";
+  option routers 192.168.111.254;
+   option domain-name-servers 192.168.111.253;
+   option domain-name "kni.example.com";
+}
+
+
+host master-1 {
+   hardware ethernet 2c:c2:60:1f:6d:01;
+   fixed-address 192.168.111.3;
+    option host-name "master-1";
+  option routers 192.168.111.254;
+   option domain-name-servers 192.168.111.253;
+   option domain-name "kni.example.com";
+}
+
+
+host master-2 {
+   hardware ethernet 2c:c2:60:1f:6d:02;
+   fixed-address 192.168.111.4;
+   option host-name "master-2";
+  option routers 192.168.111.254;
+   option domain-name-servers 192.168.111.253;
+   option domain-name "kni.example.com";
+}
+
+subnet 192.168.111.0 netmask 255.255.255.0 {
+  pool {
+  range 192.168.111.10 192.168.111.20;
+  option domain-name-servers 192.168.111.253;
+  option domain-name "kni.example.com";
+  option routers 192.168.111.254;
+  default-lease-time 600;
+  max-lease-time 7200;
+  }
+}
+
+----
+
+=== Bind Configuration
+
+.Excerpt from `named.conf`
+[%nowrap]
+----
+zone "example.com" IN {
+    type master;
+    file "/etc/named/example.com.zone.db";
+};
+----
+
+.Content of `example.com.zone.db`
+[%nowrap]
+----
+$TTL    604800
+@       IN      SOA     ns1.example.com. admin.example.com. (
+                  3       ; Serial
+             604800     ; Refresh
+              86400     ; Retry
+            2419200     ; Expire
+             604800 )   ; Negative Cache TTL
+
+ 	IN	NS	ns1.kni.example.com.
+ns1.kni.example.com. IN	A	192.168.111.252
+*.apps.kni.example.com. IN       A       192.168.111.251
+api.kni.example.com. IN A 192.168.111.5
+api-int.kni.example.com. IN A 192.168.111.5
+
+_etcd-server-ssl._tcp.kni.example.com. IN SRV 0 10 2380 etcd-0.kni.example.com.
+_etcd-server-ssl._tcp.kni.example.com. IN SRV 0 10 2380 etcd-1.kni.example.com.
+_etcd-server-ssl._tcp.kni.example.com. IN SRV 0 10 2380 etcd-2.kni.example.com.
+
+
+master-0.kni.example.com.	IN A	192.168.111.2
+master-1.kni.example.com.	IN A	192.168.111.3
+master-2.kni.example.com.	IN A	192.168.111.4
+
+etcd-0.kni.example.com.	IN A	192.168.111.2
+etcd-1.kni.example.com.	IN A	192.168.111.3
+etcd-2.kni.example.com.	IN A	192.168.111.4
+----
+
+== Preparation
+. Connect to username@workstation-GUID.rhpds.opentlc.com
+
+. Connect from workstation to the provisioner VM (password `r3dh4t1!`)
++
+[%nowrap]
+----
+[username@workstation-Guid ~]$ ssh root@provisioner
+----
+
+. Create `/etc/yum.repos.d/open.repo`
++
+[%nowrap]
+----
+[root@provisioner ~]# cat > /etc/yum.repos.d/open.repo <<EOF
+[rhel-7-server-rpms]
+name=Red Hat Enterprise Linux 7 Server (RPMs)
+baseurl=http://192.0.2.253/repos/rhel-7-server-rpms
+enabled=1
+gpgcheck=0
+
+[rhel-7-server-extras-rpms]
+name=Red Hat Enterprise Linux 7 Server - Extras (RPMs)
+baseurl=http://192.0.2.253/repos/rhel-7-server-extras-rpms
+enabled=1
+gpgcheck=0
+
+
+[rhel-7-server-optional-rpms]
+name=Red Hat Enterprise Linux 7 Server - Extras (RPMs)
+baseurl=http://192.0.2.253/repos/rhel-7-server-optional-rpms
+enabled=1
+gpgcheck=0
+
+
+[rhel-7-server-rh-common-rpms]
+name=Red Hat Enterprise Linux 7 Server - RH Common (RPMs)
+baseurl=http://192.0.2.253/repos/rhel-7-server-rh-common-rpms
+enabled=1
+gpgcheck=0
+
+[rhel-ha-for-rhel-7-server-rpms]
+name=Red Hat Enterprise Linux High Availability (for RHEL 7 Server) (RPMs)
+baseurl=http://192.0.2.253/repos/rhel-ha-for-rhel-7-server-rpms
+enabled=1
+gpgcheck=0
+
+[rhel-7-server-openstack-13-rpms]
+name=Red Hat OpenStack Platform 13 for RHEL 7 (RPMs)
+baseurl=http://192.0.2.253/repos/rhel-7-server-openstack-13-rpms
+enabled=1
+gpgcheck=0
+EOF
+----
+
+. Create a user on the provisioner node called `kni`:
++
+[source,text]
+----
+[root@provisioner ~]# useradd kni
+----
+
+. Create a `sudo` rule allowing the `kni` user to run any command as `root` without requiring a password:
++
+[source,text]
+----
+[root@provisioner ~]# echo 'kni ALL=(root) NOPASSWD:ALL' | tee -a /etc/sudoers.d/kni
+----
++
+.Expected Output
+[source,text]
+----
+kni ALL=(root) NOPASSWD:ALL
+----
+
+. Set the correct permissions on the `kni` user's `sudo` rule file:
++
+[source,text]
+----
+[root@provisioner ~]# chmod 0440 /etc/sudoers.d/kni
+----
+
+. Switch to `kni` user
++
+[%nowrap]
+----
+[root@provisioner ~]# su - kni
+----
+
+. Install `git` using `yum`
++
+[%nowrap]
+----
+[kni@provisioner ~]$ sudo yum install -y git
+----
++
+.Sample Output
+[%nowrap]
+----
+<<OMITTED>>
+Installed:
+  git.x86_64 0:1.8.3.1-20.el7
+
+Dependency Installed:
+  perl.x86_64 4:5.16.3-293.el7              perl-Carp.noarch 0:1.26-244.el7               perl-Encode.x86_64 0:2.51-7.el7         perl-Error.noarch 1:0.17020-2.el7     perl-Exporter.noarch 0:5.68-3.el7
+  perl-File-Path.noarch 0:2.09-2.el7        perl-File-Temp.noarch 0:0.23.01-3.el7         perl-Filter.x86_64 0:1.49-3.el7         perl-Getopt-Long.noarch 0:2.40-3.el7  perl-Git.noarch 0:1.8.3.1-20.el7
+  perl-HTTP-Tiny.noarch 0:0.033-3.el7       perl-PathTools.x86_64 0:3.40-5.el7            perl-Pod-Escapes.noarch 1:1.04-293.el7  perl-Pod-Perldoc.noarch 0:3.20-4.el7  perl-Pod-Simple.noarch 1:3.28-4.el7
+  perl-Pod-Usage.noarch 0:1.63-3.el7        perl-Scalar-List-Utils.x86_64 0:1.27-248.el7  perl-Socket.x86_64 0:2.010-4.el7        perl-Storable.x86_64 0:2.45-3.el7     perl-TermReadKey.x86_64 0:2.30-20.el7
+  perl-Text-ParseWords.noarch 0:3.29-4.el7  perl-Time-HiRes.x86_64 4:1.9725-3.el7         perl-Time-Local.noarch 0:1.2300-2.el7   perl-constant.noarch 0:1.27-2.el7     perl-libs.x86_64 4:5.16.3-293.el7
+  perl-macros.x86_64 4:5.16.3-293.el7       perl-parent.noarch 1:0.225-244.el7            perl-podlators.noarch 0:2.5.1-3.el7     perl-threads.x86_64 0:1.87-4.el7      perl-threads-shared.x86_64 0:1.43-6.el7
+
+Complete!
+----
+
+. Clone `openshift-metal3` repository
++
+[%nowrap]
+----
+[kni@provisioner ~]$ git clone https://github.com/openshift-metal3/dev-scripts
+----
++
+.Sample Output
+[%nowrap]
+----
+Cloning into 'dev-scripts'...
+remote: Enumerating objects: 3480, done.
+remote: Total 3480 (delta 0), reused 0 (delta 0), pack-reused 3480
+Receiving objects: 100% (3480/3480), 762.71 KiB | 0 bytes/s, done.
+Resolving deltas: 100% (1807/1807), done.
+----
+
+. Create a file `config_kni.sh` inside `dev-scripts` directory
++
+[%nowrap]
+----
+[kni@provisioner ~]$ cd dev-scripts/
+----
++
+.Content
+[%nowrap]
+----
+#!/bin/bash
+
+# Get a valid pull secret (json string) from
+# You can get this secret from https://cloud.openshift.com/clusters/install#pull-secret
+set +x
+export PULL_SECRET='{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K2pvc2Vnb256cmVkaGF0Y29tMWxtcmI4ZmdvdW02aTlxd2R2MWpwMHhwam1pOkk2TVczVVdVUzJPWk1XSlJQT1EyOFhYOFJBREZBWTBEUU9WOFIzVk8xRzM5NE5KODdHMlE4V0VGWE1JTTlMWE8=","email":"josegonz@redhat.com"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K2pvc2Vnb256cmVkaGF0Y29tMWxtcmI4ZmdvdW02aTlxd2R2MWpwMHhwam1pOkk2TVczVVdVUzJPWk1XSlJQT1EyOFhYOFJBREZBWTBEUU9WOFIzVk8xRzM5NE5KODdHMlE4V0VGWE1JTTlMWE8=","email":"josegonz@redhat.com"},"registry.connect.redhat.com":{"auth":"ODA5MjQ3Mnx1aGMtMUxNckI4ZkdPdW02STlRV0R2MUpwMHhQak1JOmV5SmhiR2NpT2lKU1V6VXhNaUo5LmV5SnpkV0lpT2lKbE5UWmhNMkl6Wm1FM01qYzBNV1l3T1RBd09Ua3dNVGxqWXpsa01USmtaaUo5LnBVRTU4WExtSWNPWlRrLXpna2JzeU1iMF9POXF1YUQxQmwyUDhyR1hhazQtS0FFeXdtb2NybkwzaHhFYU0tUFdZeDlkVTl3Y1R4WkhXSnIwdUtSbGctOGgtVWwwYmx2VnhTM1F0MXgtcDhUTU9HTnh1V2c1Y24zempzamJoUE11YzlmQXNpcGZPejRKazNLa3RnS3JlWUF5SlhpMml4NkUzUklaVzRMSER4VzFfMVIyX3loeXNoVmQxVXZvV0c1cmlyOFVFLTNrZmR1eFJpbmIzVU1rM0hPSVJvSjRqS2VxTWlhLWw3ZktVbGJPQ3gydmRmUHRHQ2laWnEzWGNueFU4Rkt1aWJpSjBPWlBaR2dyUjN6YXY1dk5hdHQ5MmFqcXRtY1dWM3k2MFlDQVlzTDhoUHpRTkRBRzYzVzRXaVF3cnpDcl9VQmlLV0p0d01UY3pVQWpudnRNQ3JTLWw5TU5vODZUVjBTOUpoSDNHTHJPaHdmWW1qTWxHNUc3QU1QV3NiVWZmekFvd180cmdCTU1KQS1feXFzZ3JyeVByWUp4c2o4U2E0dUVrNXVYQktHMEdkeUY4N2t1dDJCc1NSbWMtYlJJQ3dvWENSV080RmI4cEFxdDNFTUdKSlotM0o4djJ1MDRKd2hkdzE2TmlDVU9sQUhuaENCNUtrX01WV01peUhzLWxodm5FUHJxQ3dRb1E3Umx0RU1BOU1fSkRXdUlyUDlubmMxeFFXLV9FUXpxaGJFTVg2Yzg0VWNRZnA3UV82Vy1KRFhZaGNoQlBHQmVqdFRHc3V1SUZacW1SVlFtblNpa3d2VkNGU1ZKMlR6T1Q2cUUxR3NuX3pBWXQzeTNvZm9ITU1hSHZEZ3phTUhaSURiU0h3RTZHS2lfSkNFOVRSUV9GMGJ6TW4w","email":"josegonz@redhat.com"},"registry.redhat.io":{"auth":"ODA5MjQ3Mnx1aGMtMUxNckI4ZkdPdW02STlRV0R2MUpwMHhQak1JOmV5SmhiR2NpT2lKU1V6VXhNaUo5LmV5SnpkV0lpT2lKbE5UWmhNMkl6Wm1FM01qYzBNV1l3T1RBd09Ua3dNVGxqWXpsa01USmtaaUo5LnBVRTU4WExtSWNPWlRrLXpna2JzeU1iMF9POXF1YUQxQmwyUDhyR1hhazQtS0FFeXdtb2NybkwzaHhFYU0tUFdZeDlkVTl3Y1R4WkhXSnIwdUtSbGctOGgtVWwwYmx2VnhTM1F0MXgtcDhUTU9HTnh1V2c1Y24zempzamJoUE11YzlmQXNpcGZPejRKazNLa3RnS3JlWUF5SlhpMml4NkUzUklaVzRMSER4VzFfMVIyX3loeXNoVmQxVXZvV0c1cmlyOFVFLTNrZmR1eFJpbmIzVU1rM0hPSVJvSjRqS2VxTWlhLWw3ZktVbGJPQ3gydmRmUHRHQ2laWnEzWGNueFU4Rkt1aWJpSjBPWlBaR2dyUjN6YXY1dk5hdHQ5MmFqcXRtY1dWM3k2MFlDQVlzTDhoUHpRTkRBRzYzVzRXaVF3cnpDcl9VQmlLV0p0d01UY3pVQWpudnRNQ3JTLWw5TU5vODZUVjBTOUpoSDNHTHJPaHdmWW1qTWxHNUc3QU1QV3NiVWZmekFvd180cmdCTU1KQS1feXFzZ3JyeVByWUp4c2o4U2E0dUVrNXVYQktHMEdkeUY4N2t1dDJCc1NSbWMtYlJJQ3dvWENSV080RmI4cEFxdDNFTUdKSlotM0o4djJ1MDRKd2hkdzE2TmlDVU9sQUhuaENCNUtrX01WV01peUhzLWxodm5FUHJxQ3dRb1E3Umx0RU1BOU1fSkRXdUlyUDlubmMxeFFXLV9FUXpxaGJFTVg2Yzg0VWNRZnA3UV82Vy1KRFhZaGNoQlBHQmVqdFRHc3V1SUZacW1SVlFtblNpa3d2VkNGU1ZKMlR6T1Q2cUUxR3NuX3pBWXQzeTNvZm9ITU1hSHZEZ3phTUhaSURiU0h3RTZHS2lfSkNFOVRSUV9GMGJ6TW4w","email":"josegonz@redhat.com"},"registry.svc.ci.openshift.org": { "auth": "c3lzdGVtLXNlcnZpY2VhY2NvdW50LWtuaS1kZWZhdWx0OmV5SmhiR2NpT2lKU1V6STFOaUlzSW10cFpDSTZJaUo5LmV5SnBjM01pT2lKcmRXSmxjbTVsZEdWekwzTmxjblpwWTJWaFkyTnZkVzUwSWl3aWEzVmlaWEp1WlhSbGN5NXBieTl6WlhKMmFXTmxZV05qYjNWdWRDOXVZVzFsYzNCaFkyVWlPaUpyYm1raUxDSnJkV0psY201bGRHVnpMbWx2TDNObGNuWnBZMlZoWTJOdmRXNTBMM05sWTNKbGRDNXVZVzFsSWpvaVpHVm1ZWFZzZEMxMGIydGxiaTAxZEdkbU55SXNJbXQxWW1WeWJtVjBaWE11YVc4dmMyVnlkbWxqWldGalkyOTFiblF2YzJWeWRtbGpaUzFoWTJOdmRXNTBMbTVoYldVaU9pSmtaV1poZFd4MElpd2lhM1ZpWlhKdVpYUmxjeTVwYnk5elpYSjJhV05sWVdOamIzVnVkQzl6WlhKMmFXTmxMV0ZqWTI5MWJuUXVkV2xrSWpvaVlqZzNNRGt4WmpZdE5qRXlNeTB4TVdVNUxXRTJNVGt0TkRJd01UQmhPR1V3TURBeUlpd2ljM1ZpSWpvaWMzbHpkR1Z0T25ObGNuWnBZMlZoWTJOdmRXNTBPbXR1YVRwa1pXWmhkV3gwSW4wLm51VGR0RlczRENHcFpvT0pCbU45VjQwWG1wbmlZRE9tUnI2Z05vNGVwRVBrb1lDXzk1YmhWX0ttYjhoTnprOTNVTGtDNnJXNTVjTXFQMVM4RHh3QWw0RUxRZ2NFZXIyalBJLXZBNGUzdlZ5cHNLbS1XSkFxcWo2OGhNN0Z4ekMzRGgxY19lN19EQkJLOWtxZmcyRzZiNTJXQmI2RUhsODg2Q2Nza3JBVm1fbmprNS14ay1Ma1hSM3lXNW5JeXlZdXhNVGg1LUNMd3lQQy1yLVIzeklzdnlWelNPVTgyeUJaaE1tUmc3enUtOWlydThENHdqRFJQclhiSm1FV3lBM1FIUlJ2VTJuci01MTFEeEhEbWhtNW14YU0tSFA4emk3SU8zVEU5SU55S3BqTmo5eTIwNmtFN0NNSVNMWmRWWFl3MkpIQ1BmSmJQMHNJY3V0dnFvOTdGdw==" }}}'
+set -x
+
+# Uncomment to build a copy of ironic or inspector locally
+#export IRONIC_INSPECTOR_IMAGE=https://github.com/metal3-io/ironic-inspector
+#export IRONIC_IMAGE=https://github.com/metal3-io/ironic
+
+# SSH key used to ssh into deployed hosts.  This must be the contents of the
+# variable, not the filename. The contents of ~/.ssh/id_rsa.pub are used by
+# default.
+#export SSH_PUB_KEY=$(cat ~/.ssh/id_rsa.pub)
+
+# Configure custom ntp servers if needed
+#export NTP_SERVERS="00.my.internal.ntp.server.com;01.other.ntp.server.com"
+
+
+# Custom
+NODES_PLATFORM="baremetal"
+NODES_FILE="ironic_hosts.json"
+NUM_WORKERS=0
+NUM_MASTERS=3
+PRO_IF=eth1
+INT_IF=eth2
+MANAGE_BR_BRIDGE=n
+ROOT_DISK=/dev/vda
+ADDN_DNS=192.0.2.254
+CLUSTER_NAME=kni
+BASE_DOMAIN=example.com
+EOF
+----
+
+. Create a file `ironic_hosts.json` inside `dev-scripts/`
++
+.Content
+[%nowrap]
+----
+{
+  "nodes": [
+      {
+      "name": "openshift-master-0",
+      "driver": "ipmi",
+      "resource_class": "baremetal",
+      "driver_info": {
+        "ipmi_username": "admin",
+        "ipmi_password": "redhat",
+        "ipmi_address": "192.0.2.221",
+        "deploy_kernel": "http://172.22.0.1/images/ironic-python-agent.kernel",
+        "deploy_ramdisk": "http://172.22.0.1/images/ironic-python-agent.initramfs"
+      },
+      "ports": [{
+        "address": "2c:c2:60:01:02:02",
+        "pxe_enabled": true
+      }],
+      "properties": {
+        "local_gb": "50",
+        "cpu_arch": "x86_64"
+      }
+    },
+     {
+      "name": "openshift-master-1",
+      "driver": "ipmi",
+      "resource_class": "baremetal",
+      "driver_info": {
+        "ipmi_username": "admin",
+        "ipmi_password": "redhat",
+        "ipmi_address": "192.0.2.222",
+        "deploy_kernel": "http://172.22.0.1/images/ironic-python-agent.kernel",
+        "deploy_ramdisk": "http://172.22.0.1/images/ironic-python-agent.initramfs"
+      },
+      "ports": [{
+        "address": "2c:c2:60:01:02:03",
+        "pxe_enabled": true
+      }],
+      "properties": {
+        "local_gb": "50",
+        "cpu_arch": "x86_64"
+      }
+    },
+    {
+      "name": "openshift-master-2",
+      "driver": "ipmi",
+      "resource_class": "baremetal",
+      "driver_info": {
+        "ipmi_username": "admin",
+        "ipmi_password": "redhat",
+        "ipmi_address": "192.0.2.223",
+        "deploy_kernel": "http://172.22.0.1/images/ironic-python-agent.kernel",
+        "deploy_ramdisk": "http://172.22.0.1/images/ironic-python-agent.initramfs"
+      },
+      "ports": [{
+        "address": "2c:c2:60:01:02:04",
+        "pxe_enabled": true
+      }],
+      "properties": {
+        "local_gb": "50",
+        "cpu_arch": "x86_64"
+      }
+    },
+    {
+      "name": "openshift-worker-0",
+      "driver": "ipmi",
+      "resource_class": "baremetal",
+      "driver_info": {
+        "ipmi_username": "admin",
+        "ipmi_password": "redhat",
+        "ipmi_address": "192.0.2.224",
+        "deploy_kernel": "http://172.22.0.1/images/ironic-python-agent.kernel",
+        "deploy_ramdisk": "http://172.22.0.1/images/ironic-python-agent.initramfs"
+      },
+      "ports": [{
+        "address": "2c:c2:60:01:02:05",
+        "pxe_enabled": true
+      }],
+      "properties": {
+        "local_gb": "50",
+        "cpu_arch": "x86_64"
+      }
+    }
+ ]
+}
+----
+
+== Installation
+
+. Install required packages
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$ time ./01_install_requirements.sh
+----
++
+.Sample Output
+[%nowrap]
+----
+<<OMITTED>>
+2019-05-31 13:40:28 (23.7 MB/s) - ‘openshift-client-4.1.tar.gz’ saved [22451799/22451799]
+
++ tar xvzf openshift-client-4.1.tar.gz
+oc
++ sudo cp oc /usr/local/bin/
+
+real	5m6.730s
+user	3m26.839s
+sys	1m19.231s
+----
+
+. Configure the host, libvirt and network configuration
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$ time ./02_configure_host.sh
+----
++
+.Sample Output
+[%nowrap]
+----
++ sudo iptables -C INPUT -p tcp --dport 8080 -j ACCEPT
++ sudo iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
++ sudo iptables -C INPUT -p tcp --dport 3000 -j ACCEPT
++ sudo iptables -I INPUT -p tcp --dport 3000 -j ACCEPT
++ '[' n == y ']'
+
+real	0m35.322s
+user	0m11.502s
+sys	0m6.464s
+----
+
+. Check network configuration
+.. Check `baremetal` bridge
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$ ip a s dev baremetal
+----
++
+.Sample Output
+[%nowrap]
+----
+10: baremetal: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 2c:c2:60:48:62:db brd ff:ff:ff:ff:ff:ff
+    inet 192.168.111.11/24 brd 192.168.111.255 scope global dynamic baremetal
+       valid_lft 554sec preferred_lft 554sec
+    inet6 fe80::2ec2:60ff:fe48:62db/64 scope link
+       valid_lft forever preferred_lft forever
+----
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$ brctl show baremetal
+----
++
+.Sample Output
+[%nowrap]
+----
+bridge name	bridge id		STP enabled	interfaces
+baremetal		8000.2cc2604862db	no		eth2
+----
+.. Check `provisioning` bridge
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$ ip a s dev provisioning
+----
++
+.Sample Output
+[%nowrap]
+----
+9: provisioning: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 2c:c2:60:48:b5:5b brd ff:ff:ff:ff:ff:ff
+    inet 172.22.0.1/24 brd 172.22.0.255 scope global provisioning
+       valid_lft forever preferred_lft forever
+    inet6 fe80::2ec2:60ff:fe48:b55b/64 scope link
+       valid_lft forever preferred_lft forever
+----
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$ brctl show provisioning
+----
++
+[%nowrap]
+----
+bridge name	bridge id		STP enabled	interfaces
+provisioning		8000.2cc26048b55b	no		eth1
+----
+
+. Synchronize openshift repository
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$ time ./03_ocp_repo_sync.sh
+----
++
+.Sample Output
+[%nowrap]
+----
++ git rebase origin/master
+Current branch master is up to date.
++ test 2 -gt 2
++ popd
+~/dev-scripts
+
+real	1m13.551s
+user	2m16.767s
+sys	0m19.555s
+----
+
+. Setup `Ironic` containers
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$ time ./04_setup_ironic.sh
+----
++
+.Sample Output
+[%nowrap]
+----
+<<OMITTED>>
++ sudo podman run -d --net host --privileged --name ironic --pod ironic-pod --env MARIADB_PASSWORD=86325920b0b4857d4e91 -v /opt/dev-scripts/ironic:/shared quay.io/metal3-io/ironic:master
+3a7bea95df5bf78204016ec3bb9ad54d694a7fce6296e6da9c053b7253bba765
++ sudo podman run -d --net host --privileged --name ironic-inspector --pod ironic-pod -v /opt/dev-scripts/ironic:/shared quay.io/metal3-io/ironic-inspector:master
+9f39e050f7c3b3d2b00e60c8e0a4458d4708133ecb1ea37e16ee404aa784f2f5
+
+real	3m22.401s
+user	3m16.487s
+sys	0m29.675s
+----
+
+. Ensure containers are running
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$ sudo podman ps
+----
++
+.Sample Output
+[%nowrap]
+----
+CONTAINER ID  IMAGE                                      COMMAND               CREATED         STATUS             PORTS  NAMES
+9f39e050f7c3  quay.io/metal3-io/ironic-inspector:master  /bin/runironic-in...  38 seconds ago  Up 38 seconds ago         ironic-inspector
+3a7bea95df5b  quay.io/metal3-io/ironic:master            /bin/runironic        39 seconds ago  Up 38 seconds ago         ironic
+a53344a1f236  quay.io/metal3-io/ironic:master            /bin/runmariadb       39 seconds ago  Up 39 seconds ago         mariadb
+3a412895324e  quay.io/metal3-io/ironic:master            /bin/runhttpd         40 seconds ago  Up 39 seconds ago         httpd
+33912cabb9aa  quay.io/metal3-io/ironic:master            /bin/rundnsmasq       40 seconds ago  Up 40 seconds ago         dnsmasq
+----
+
+. Apply workaround for Ravello (not automated clean + time between operations)
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$ sudo podman exec ironic sed -i 's/conductor automated_clean true/conductor automated_clean false/' /bin/runironic
+[kni@provisioner dev-scripts]$ sudo podman exec ironic sed -i '58icrudini --set /etc/ironic/ironic.conf ipmi min_command_interval 15' /bin/runironic
+[kni@provisioner dev-scripts]$ sudo podman restart ironic
+----
++
+.Sample Output
+[%nowrap]
+----
+3a7bea95df5bf78204016ec3bb9ad54d694a7fce6296e6da9c053b7253bba765
+----
+
+. Install OpenShift Cluster
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$ time ./06_create_cluster.sh
+----
++
+During this process it will happen:
+* Creation of bootstrap VM inside the `provisioner`.
+* Boot the masters and the workers using IPMI
+* Bootstrap the servers
+* Stop and destroy the bootstrap VM
+* Finish the cluster installation
++
+.Sample Output
+[%nowrap]
+----
+level=info msg="Waiting up to 10m0s for the openshift-console route to be created..."
+level=debug msg="Route found in openshift-console namespace: console"
+level=debug msg="Route found in openshift-console namespace: downloads"
+level=debug msg="OpenShift console route is created"
+level=info msg="Install complete!"
+level=info msg="To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=/home/kni/dev-scripts/ocp/auth/kubeconfig'"
+level=info msg="Access the OpenShift web-console here: https://console-openshift-console.apps.kni.example.com"
+level=info msg="Login to the console with user: kubeadmin, password: LZuqH-RgMyB-VIV5Q-Z9Rxt"
++ echo 'Cluster up, you can interact with it via oc --config /home/kni/dev-scripts/ocp/auth/kubeconfig <command>'
+Cluster up, you can interact with it via oc --config /home/kni/dev-scripts/ocp/auth/kubeconfig <command>
+
+real	41m39.785s
+user	1m31.783s
+sys	0m27.421s
+----
+
+
+== Verify installation
+. Check the nodes
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$  oc --config /home/kni/dev-scripts/ocp/auth/kubeconfig  get nodes -o wide
+----
++
+.Sample Output
+[%nowrap]
+----
+NAME       STATUS   ROLES    AGE   VERSION             INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                                                   KERNEL-VERSION               CONTAINER-RUNTIME
+master-0   Ready    master   13m   v1.13.4+27816e1b1   172.22.0.67   <none>        Red Hat Enterprise Linux CoreOS 410.8.20190517.0 (Ootpa)   4.18.0-80.1.2.el8_0.x86_64   cri-o://1.13.9-1.rhaos4.1.gitd70609a.el8
+master-1   Ready    master   13m   v1.13.4+27816e1b1   172.22.0.68   <none>        Red Hat Enterprise Linux CoreOS 410.8.20190517.0 (Ootpa)   4.18.0-80.1.2.el8_0.x86_64   cri-o://1.13.9-1.rhaos4.1.gitd70609a.el8
+master-2   Ready    master   13m   v1.13.4+27816e1b1   172.22.0.69   <none>        Red Hat Enterprise Linux CoreOS 410.8.20190517.0 (Ootpa)   4.18.0-80.1.2.el8_0.x86_64   cri-o://1.13.9-1.rhaos4.1.gitd70609a.el8
+----
+
+. Check cluster version and status
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$  oc --config /home/kni/dev-scripts/ocp/auth/kubeconfig  get clusterversion
+----
++
+.Sample Output
+[%nowrap]
+----
+NAME      VERSION            AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.1.0-rc.5-kni.1   True        False         2m3s    Cluster version is 4.1.0-rc.5-kni.1
+----
+
+. Check cluster operators
++
+[%nowrap]
+----
+[kni@provisioner dev-scripts]$  oc --config /home/kni/dev-scripts/ocp/auth/kubeconfig  get clusteroperator
+----
++
+.Sample Output
+[%nowrap]
+----
+NAME                                 VERSION            AVAILABLE   PROGRESSING   DEGRADED   SINCE
+authentication                       4.1.0-rc.5-kni.1   True        False         False      99s
+cloud-credential                     4.1.0-rc.5-kni.1   True        False         False      13m
+cluster-autoscaler                   4.1.0-rc.5-kni.1   True        False         False      13m
+console                              4.1.0-rc.5-kni.1   True        False         False      4m44s
+dns                                  4.1.0-rc.5-kni.1   True        False         False      13m
+image-registry                       4.1.0-rc.5-kni.1   True        False         False      7m44s
+ingress                              4.1.0-rc.5-kni.1   True        False         False      8m18s
+kube-apiserver                       4.1.0-rc.5-kni.1   True        False         False      10m
+kube-controller-manager              4.1.0-rc.5-kni.1   True        False         False      10m
+kube-scheduler                       4.1.0-rc.5-kni.1   True        False         False      10m
+machine-api                          4.1.0-rc.5-kni.1   True        False         False      13m
+machine-config                       4.1.0-rc.5-kni.1   True        False         False      12m
+marketplace                          4.1.0-rc.5-kni.1   True        False         False      8m6s
+monitoring                           4.1.0-rc.5-kni.1   True        False         False      6m6s
+network                              4.1.0-rc.5-kni.1   True        False         False      13m
+node-tuning                          4.1.0-rc.5-kni.1   True        False         False      9m7s
+openshift-apiserver                  4.1.0-rc.5-kni.1   True        False         False      9m19s
+openshift-controller-manager         4.1.0-rc.5-kni.1   True        False         False      12m
+openshift-samples                    4.1.0-rc.5-kni.1   True        False         False      3m20s
+operator-lifecycle-manager           4.1.0-rc.5-kni.1   True        False         False      12m
+operator-lifecycle-manager-catalog   4.1.0-rc.5-kni.1   True        False         False      12m
+service-ca                           4.1.0-rc.5-kni.1   True        False         False      13m
+service-catalog-apiserver            4.1.0-rc.5-kni.1   True        False         False      9m11s
+service-catalog-controller-manager   4.1.0-rc.5-kni.1   True        False         False      9m11s
+storage                              4.1.0-rc.5-kni.1   True        False         False      8m52s
+----
