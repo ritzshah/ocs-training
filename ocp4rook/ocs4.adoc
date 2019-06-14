@@ -724,24 +724,6 @@ prometheus-operator-954644495-rmp6q
 redhat-operators-78f5d67796-hm5qk
 ----
 
-. Explore the *Cluster Version Operator* by using `oc rsh` to rsh into the pod and listing all the manitests in `/release-manifests`.
-. Then explore the contents of the files that make up the `cluster-image-registry-operator`. *DO NOT CHANGE ANY OF THESE FILES*. How does the Cluster Version Operator determine which file to apply first?
-+
-[source,sh]
-----
-oc project openshift-cluster-version
-oc get pod
-
-# Replace the pod name in the next command with your pod name
-oc rsh cluster-version-operator-6cdd79d47d-4lr77
-sh-4.2# ls /release-manifests
-sh-4.2# ls /release-manifests | grep cluster-image-registry
-sh-4.2# cat /release-manifests/0000_70_cluster-image-registry-operator_00-crd.yaml
-sh-4.2# cat /release-manifests/0000_70_cluster-image-registry-operator_02-rbac.yaml
-sh-4.2# cat /release-manifests/0000_70_cluster-image-registry-operator_04-operator.yaml
-sh-4.2# exit
-----
-
 . Explore the MachineConfig operator
 .. Which project does the operator run in?
 .. Which CRDs does the operator manage?
