@@ -2,6 +2,9 @@
 
 == Lab Overview
 
+.Ceph deployed on OpenShift using Rook
+image::Rook_diagram_4.png[]
+
 This hands-on workshop is for both system administrators and application developers interested in learning how to deploy and manage OpenShift Container Storage (OCS). In this lab you will be using OpenShift Container Platform (OCP) 4.x and Rook to deploy Ceph as a persistent storage solution for OCP workloads.
 
 .Goals
@@ -18,6 +21,9 @@ This hands-on workshop is for both system administrators and application develop
 .Provisioned Environment Hosts
 
 * Bastion host: `bastion.$GUID.$SANDBOX.opentlc.com`, `clientvm.$GUID.internal`
+
+[[labexercises]]
+:numbered:
 
 == Provision Lab Environment
 
@@ -631,11 +637,6 @@ oc get crd|grep machineconfiguration
 .Rook and Kubernetes Architecture
 image::rook_diagram_3.png[]
 
-.Ceph deployed on OpenShift using Rook
-image::Rook_diagram_4.png[]
-
-[[labexercises]]
-:numbered:
 == Deploy Ceph using Rook.io
 
 === Scale OCP cluster and add 3 new nodes
