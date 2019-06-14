@@ -570,38 +570,7 @@ openshift-cluster-machine-approver                           Active
 openshift-cluster-node-tuning-operator                       Active
 openshift-cluster-samples-operator                           Active
 openshift-cluster-storage-operator                           Active
-openshift-cluster-version                                    Active
-openshift-config                                             Active
-openshift-config-managed                                     Active
-openshift-console                                            Active
-openshift-console-operator                                   Active
-openshift-controller-manager                                 Active
-openshift-controller-manager-operator                        Active
-openshift-core-operators                                     Active
-openshift-dns                                                Active
-openshift-dns-operator                                       Active
-openshift-image-registry                                     Active
-openshift-infra                                              Active
-openshift-ingress                                            Active
-openshift-ingress-operator                                   Active
-openshift-kube-apiserver                                     Active
-openshift-kube-apiserver-operator                            Active
-openshift-kube-controller-manager                            Active
-openshift-kube-controller-manager-operator                   Active
-openshift-kube-scheduler                                     Active
-openshift-kube-scheduler-operator                            Active
-openshift-machine-api                                        Active
-openshift-machine-config-operator                            Active
-openshift-marketplace                                        Active
-openshift-monitoring                                         Active
-openshift-multus                                             Active
-openshift-network-operator                                   Active
-openshift-node                                               Active
-openshift-operator-lifecycle-manager                         Active
-openshift-operators                                          Active
-openshift-sdn                                                Active
-openshift-service-cert-signer                                Active
-openshift-svcat-apiserver-operator                           Active
+:
 openshift-svcat-controller-manager-operator                  Active
 ----
 
@@ -620,61 +589,7 @@ alertmanagers.monitoring.coreos.com                                      2019-03
 apiservers.config.openshift.io                                           2019-03-07T20:43:12Z
 authentications.config.openshift.io                                      2019-03-07T20:43:13Z
 authentications.operator.openshift.io                                    2019-03-07T20:45:03Z
-builds.config.openshift.io                                               2019-03-07T20:43:13Z
-catalogsourceconfigs.marketplace.redhat.com                              2019-03-07T21:00:19Z
-catalogsources.operators.coreos.com                                      2019-03-07T20:58:26Z
-clusterautoscalers.autoscaling.openshift.io                              2019-03-07T20:58:23Z
-clusterdnses.dns.openshift.io                                            2019-03-07T20:44:25Z
-clusteringresses.ingress.openshift.io                                    2019-03-07T21:00:13Z
-clusternetworks.network.openshift.io                                     2019-03-07T20:44:02Z
-clusteroperators.config.openshift.io                                     2019-03-07T20:43:12Z
-clusteroperators.operatorstatus.openshift.io                             2019-03-07T20:43:26Z
-clusters.machine.openshift.io                                            2019-03-07T20:57:52Z
-clusterserviceversions.operators.coreos.com                              2019-03-07T20:58:23Z
-clusterversions.config.openshift.io                                      2019-03-07T20:43:12Z
-configs.imageregistry.operator.openshift.io                              2019-03-07T21:00:13Z
-configs.samples.operator.openshift.io                                    2019-03-07T21:00:13Z
-consoles.config.openshift.io                                             2019-03-07T20:43:13Z
-consoles.operator.openshift.io                                           2019-03-07T21:00:17Z
-containerruntimeconfigs.machineconfiguration.openshift.io                2019-03-07T20:57:53Z
-controllerconfigs.machineconfiguration.openshift.io                      2019-03-07T20:57:50Z
-credentialsrequests.cloudcredential.openshift.io                         2019-03-07T20:57:39Z
-dnses.config.openshift.io                                                2019-03-07T20:43:13Z
-egressnetworkpolicies.network.openshift.io                               2019-03-07T20:44:03Z
-features.config.openshift.io                                             2019-03-07T20:43:13Z
-hostsubnets.network.openshift.io                                         2019-03-07T20:44:02Z
-images.config.openshift.io                                               2019-03-07T20:43:14Z
-infrastructures.config.openshift.io                                      2019-03-07T20:43:14Z
-ingresses.config.openshift.io                                            2019-03-07T20:43:14Z
-installplans.operators.coreos.com                                        2019-03-07T20:58:24Z
-kubeapiservers.operator.openshift.io                                     2019-03-07T20:45:06Z
-kubecontrollermanagers.operator.openshift.io                             2019-03-07T20:50:51Z
-kubeletconfigs.machineconfiguration.openshift.io                         2019-03-07T20:57:52Z
-kubeschedulers.operator.openshift.io                                     2019-03-07T20:49:08Z
-machineautoscalers.autoscaling.openshift.io                              2019-03-07T20:58:24Z
-machineclasses.machine.openshift.io                                      2019-03-07T20:57:53Z
-machineconfigpools.machineconfiguration.openshift.io                     2019-03-07T20:57:51Z
-machineconfigs.machineconfiguration.openshift.io                         2019-03-07T20:57:49Z
-machinedeployments.machine.openshift.io                                  2019-03-07T20:57:51Z
-machinehealthchecks.healthchecking.openshift.io                          2019-03-07T20:57:54Z
-machines.machine.openshift.io                                            2019-03-07T20:57:49Z
-machinesets.machine.openshift.io                                         2019-03-07T20:57:50Z
-mcoconfigs.machineconfiguration.openshift.io                             2019-03-07T20:57:39Z
-netnamespaces.network.openshift.io                                       2019-03-07T20:44:02Z
-network-attachment-definitions.k8s.cni.cncf.io                           2019-03-07T20:44:00Z
-networkconfigs.networkoperator.openshift.io                              2019-03-07T20:43:15Z
-networks.config.openshift.io                                             2019-03-07T20:43:14Z
-oauths.config.openshift.io                                               2019-03-07T20:43:14Z
-openshiftapiservers.operator.openshift.io                                2019-03-07T20:58:39Z
-openshiftcontrollermanagers.operator.openshift.io                        2019-03-07T20:59:39Z
-operatorgroups.operators.coreos.com                                      2019-03-07T20:58:28Z
-operatorsources.marketplace.redhat.com                                   2019-03-07T21:00:20Z
-projects.config.openshift.io                                             2019-03-07T20:43:15Z
-prometheuses.monitoring.coreos.com                                       2019-03-07T21:04:24Z
-prometheusrules.monitoring.coreos.com                                    2019-03-07T21:04:24Z
-registries.config.openshift.io                                           2019-03-07T20:43:15Z
-servicecatalogapiservers.operator.openshift.io                           2019-03-07T21:00:13Z
-servicecatalogcontrollermanagers.operator.openshift.io                   2019-03-07T21:00:14Z
+:
 servicecertsigneroperatorconfigs.servicecertsigner.config.openshift.io   2019-03-07T20:45:05Z
 servicemonitors.monitoring.coreos.com                                    2019-03-07T21:04:24Z
 subscriptions.operators.coreos.com                                       2019-03-07T20:58:25Z
@@ -695,29 +610,7 @@ catalog-operator-6b87796548-hck6k
 certified-operators-56c4c5867b-k57w7
 cloud-credential-operator-5b66bbd6d6-fxcwg
 cluster-autoscaler-operator-77946df547-5gnjl
-cluster-image-registry-operator-8548dcf5b8-7fgvn
-cluster-monitoring-operator-6fc8c9bc75-47zxs
-cluster-node-tuning-operator-668c989fcf-227wp
-cluster-samples-operator-cc8bcdfd9-65dgd
-cluster-storage-operator-576b688f4-7n569
-cluster-version-operator-846497fb4b-bs7jt
-community-operators-7f6bc56c58-ml5b5
-console-operator-67b9746bdb-hfdpf
-dns-operator-df89b555d-vr6xb
-ingress-operator-7d74fdfc5f-grhth
-kube-apiserver-operator-7554ccd5b4-bwt4p
-kube-controller-manager-operator-788f7b85-jjzpk
-machine-api-operator-69b6c88cb5-f8xql
-machine-config-operator-64b595bb46-gnv66
-marketplace-operator-6ffbf5466d-fkl74
-network-operator-66d578f86f-wfpvm
-olm-operator-74dbd56c57-gb76l
-olm-operators-vt2q9
-openshift-apiserver-operator-7997b9f5ff-shc8q
-openshift-authentication-operator-74f579db49-tcjg4
-openshift-controller-manager-operator-7cdbcb884c-mhgc9
-openshift-kube-scheduler-operator-7b6c65b957-x8qvh
-openshift-service-cert-signer-operator-5c555c755c-ghkcx
+:
 openshift-svcat-apiserver-operator-5f69d6564d-4cdkk
 openshift-svcat-controller-manager-operator-569f4bc5bc-mhfbs
 prometheus-operator-954644495-rmp6q
