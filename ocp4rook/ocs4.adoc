@@ -1,9 +1,9 @@
 = Lab: Deploying and Managing OpenShift Container Storage with Rook-Ceph Operator
 
-== Lab Overview
-
 .Ceph deployed on OpenShift using Rook
 image::Rook_diagram_4.png[]
+
+== Lab Overview
 
 This hands-on workshop is for both system administrators and application developers interested in learning how to deploy and manage OpenShift Container Storage (OCS). In this lab you will be using OpenShift Container Platform (OCP) 4.x and Rook to deploy Ceph as a persistent storage solution for OCP workloads.
 
