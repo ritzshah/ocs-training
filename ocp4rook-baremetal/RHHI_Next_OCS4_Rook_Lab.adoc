@@ -1,4 +1,4 @@
-Order `Services - Catalogs - OPENTLC Cloud Infrastructure Labs - RHHI.NEXT` using opentlc-beta-access
+Order `Services - Catalogs - OPENTLC Cloud Infrastructure Labs - Rook-RHHI-Next-BareMetal` using opentlc-beta-access
 
 == Information
 
