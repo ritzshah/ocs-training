@@ -1,6 +1,6 @@
 [[__asciidoctor-preview-0__]]
-Deploy & Manage OCS with Rook-Ceph Operator on OpenShift 4.2 on OpenStack 13 Installation Lab
-----------------------------------------------------------------------------------------------
+Rook-Ceph Operator on OpenShift 4.2 on OpenStack 13 Installation Lab
+---------------------------------------------------------------------
 
 [[preamble]]
 [[__asciidoctor-preview-1__]]
