@@ -1367,7 +1367,7 @@ Git Clone my version of Ceph Rook operator configuration files. You can definite
 (openshift) [stack@undercloud installer]$  cd ocp4-rook/ceph
 ----
 
-Deploying Ceph cluster using Rook Operator on OCP 4.0
+Deploying Ceph cluster using Rook Operator on OCP 4.x
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 List default Security Context Constraints
@@ -1593,7 +1593,8 @@ In this section you will download *storageclass.yaml* and then create the OCP *s
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100  1451  100  1451    0     0   4148      0 --:--:-- --:--:-- --:--:--  4169
-cat  storageclass.yaml
+
+(openshift) [stack@undercloud installer]$ cat  storageclass.yaml
 ----
 
 Notice the `provisioner: ceph.rook.io/block` and that `replicated: size=2` which is a good practice when there are only 3 OSDs. This is because if one *OSD* is down OCP volumes can continue to be created and used.
@@ -1631,7 +1632,7 @@ pool 1 'replicapool' replicated size 2 min_size 1 crush_rule 1 object_hash rjenk
 
 Make sure to `exit` the *toolbox* before continuing.
 
-== Create new OCP deployment using Ceph RBD volume
+== Using `rook-ceph-block` *storageclass* by an OCP application as persistent storage.
 
 In this section the `rook-ceph-block` *storageclass* will be used by an OCP application + database deployment to create persistent storage. The persistent storage will be a Ceph RBD (RADOS Block Device) volume (object) in the pool=`replicapool`.
 
