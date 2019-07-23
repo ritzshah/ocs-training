@@ -1372,9 +1372,6 @@ Git Clone my version of Ceph Rook operator configuration files. You can definite
 (openshift) [stack@undercloud installer]$  cd ocp4-rook/ceph
 ----
 
-Deploying Ceph cluster using Rook Operator on OCP 4.x
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 List default Security Context Constraints
 
 [source,hm,hn,ho,hp,hq,fx,do,jq]
