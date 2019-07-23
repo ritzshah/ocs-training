@@ -1356,7 +1356,6 @@ host-10-10-0-17   Ready    worker   21m   v1.14.0+04ae0f405
 master-0          Ready    master   55m   v1.14.0+04ae0f405
 ----
 
-[[4dad]]
 [[rook-ceph-deployment-on-openshift-4]]
 Rook (Ceph) Deployment on OpenShift 4
 -------------------------------------
@@ -1364,16 +1363,13 @@ Git Clone my version of Ceph Rook operator configuration files. You can definite
 
 [source,hm,hn,ho,hp,hq,fx,do,jq]
 ----
-# git clone https://github.com/ritzshah/ocp4-rook.git
-# cd ocp4-rook/ceph
+(openshift) [stack@undercloud installer]$  git clone https://github.com/ritzshah/ocp4-rook.git
+(openshift) [stack@undercloud installer]$  cd ocp4-rook/ceph
 ----
 
-[[6b34]]
 Step — 3: Deploying Ceph cluster using Rook Operator on OCP 4.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* [[d82c]]
-+
 List default Security Context Constraints
 
 [source,hm,hn,ho,hp,hq,fx,do,jq]
@@ -1390,8 +1386,6 @@ privileged         38m
 restricted         38m
 ----
 
-* [[803c]]
-+
 Create the security context constraints needed by the Rook pods
 
 [source,hm,hn,ho,hp,hq,fx,do,jq]
