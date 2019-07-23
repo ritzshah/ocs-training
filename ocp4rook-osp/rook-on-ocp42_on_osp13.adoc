@@ -1367,7 +1367,7 @@ Git Clone my version of Ceph Rook operator configuration files. You can definite
 (openshift) [stack@undercloud installer]$  cd ocp4-rook/ceph
 ----
 
-Step — 3: Deploying Ceph cluster using Rook Operator on OCP 4.0
+Deploying Ceph cluster using Rook Operator on OCP 4.0
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 List default Security Context Constraints
@@ -1392,7 +1392,7 @@ Create the security context constraints needed by the Rook pods
 ----
 (openshift) [stack@undercloud ceph]$ oc create -f scc.yaml
 securitycontextconstraints.security.openshift.io/rook-ceph created
-$(openshift) [stack@undercloud ceph]$ oc get scc
+(openshift) [stack@undercloud ceph]$ oc get scc
 NAME               AGE
 anyuid             39m
 hostaccess         39m
@@ -1405,8 +1405,6 @@ restricted         39m
 rook-ceph          23s
 ----
 
-* [[fc13]]
-+
 Deploy the rook operator
 
 [source,hm,hn,ho,hp,hq,fx,do,jq]
@@ -1430,8 +1428,7 @@ clusterrolebinding.rbac.authorization.k8s.io/rook-ceph-global created
 deployment.apps/rook-ceph-operator created
 ----
 
-* [[8d05]]
-+
+
 Verify Operator pod creation
 
 [source,hm,hn,ho,hp,hq,fx,do,jq]
@@ -1453,8 +1450,6 @@ rook-discover-pm9zj                   1/1     Running   0          19s
 ^C
 ----
 
-* [[8e78]]
-+
 Once the operator is ready, you should have the following pods
 
 [source,hm,hn,ho,hp,hq,fx,do,jq]
@@ -1466,8 +1461,6 @@ rook-ceph-operator-845c97b455-9drpg   1/1     Running   0          108s
 rook-discover-pm9zj                   1/1     Running   0          83s
 ----
 
-* [[6abc]]
-+
 Create rook cluster, which is nothing but a full fledge Ceph cluster including all the daemons
 
 [source,hm,hn,ho,hp,hq,fx,do,jq]
@@ -1516,8 +1509,6 @@ rook-ceph-mon-b           ClusterIP   172.30.3.72      <none>        6790/TCP   
 rook-ceph-mon-c           ClusterIP   172.30.91.144    <none>        6790/TCP   2m46s
 ----
 
-* [[b6a3]]
-+
 Create a toolbox container to verify your Ceph cluster
 
 [source,hm,hn,ho,hp,hq,fx,do,jq]
@@ -1536,8 +1527,6 @@ rook-ceph-osd-prepare-host-10-10-0-12-ff54w   0/2     Completed           0     
 rook-ceph-tools                               0/1     ContainerCreating   0          8s
 ----
 
-* [[8412]]
-+
 Login into the container to access your Ceph cluster
 
 [source,hm,hn,ho,hp,hq,fx,do,jq]
