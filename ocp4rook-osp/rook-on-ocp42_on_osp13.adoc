@@ -771,7 +771,7 @@ Review installation process
 Open a new session to `undercloud` server.
 
 [[__asciidoctor-preview-67__]]
-1.  Review created networks during installation
+.  Review created networks during installation
 +
 [[__asciidoctor-preview-68__]]
 [source,nowrap]
@@ -791,7 +791,7 @@ Sample Output
 | c96a5d89-f005-47b6-ae74-fd24aba05303 | rhte-sj5bt-openshift | 99665475-bd60-4359-afc3-f637aee2e210, aea8fbce-66f0-4900-927d-518631bf77a3 |
 +--------------------------------------+----------------------+----------------------------------------------------------------------------+
 ----
-2.  Review created subnets during installation
+.  Review created subnets during installation
 +
 [[__asciidoctor-preview-70__]]
 [source,nowrap]
@@ -811,7 +811,7 @@ Sample Output
 | aea8fbce-66f0-4900-927d-518631bf77a3 | rhte-sj5bt-nodes   | c96a5d89-f005-47b6-ae74-fd24aba05303 | 10.10.0.0/17   |
 +--------------------------------------+--------------------+--------------------------------------+----------------+
 ----
-3.  Review the servers created
+.  Review the servers created
 +
 [[__asciidoctor-preview-72__]]
 [source,nowrap]
@@ -836,7 +836,7 @@ Sample Output
 |==============================================================
 |__ |Notice the floating IP created, is assigned to the API VM.
 |==============================================================
-4.  List the security groups created
+.  List the security groups created
 +
 [[__asciidoctor-preview-75__]]
 [source,nowrap]
@@ -864,7 +864,7 @@ Sample Output
 |====================================================================================================
 |__ |You can explore the rules created using the command ` openstack security group rule list SGNAME`
 |====================================================================================================
-5.  List the trunk ports
+.  List the trunk ports
 +
 [[__asciidoctor-preview-78__]]
 [source,nowrap]
@@ -883,7 +883,7 @@ Sample Output
 | 172fbbc8-4bd9-49b4-bea6-2cb1c52f4f1a | rhte-sj5bt-master-trunk-0 | 92c5f017-3c20-4c13-8bfd-4ff4be31cbfb |             |
 +--------------------------------------+---------------------------+--------------------------------------+-------------+
 ----
-6.  Show the trunk parent port
+.  Show the trunk parent port
 +
 [[__asciidoctor-preview-80__]]
 [source,nowrap]
@@ -934,7 +934,7 @@ Sample Port
 | updated_at            | 2019-06-28T09:43:16Z                                                                             |
 +-----------------------+--------------------------------------------------------------------------------------------------+
 ----
-7.  List the Swift Container created
+.  List the Swift Container created
 +
 [[__asciidoctor-preview-82__]]
 [source,nowrap]
@@ -953,7 +953,7 @@ Sample Output
 | rhte-sj5bt |
 +------------+
 ----
-8.  Check the objects inside
+.  Check the objects inside
 +
 [[__asciidoctor-preview-84__]]
 [source,nowrap]
@@ -979,14 +979,14 @@ Sample Output
 |====================================================================================
 |__ |This files are going to be used by RHCOS during the ignition disks boot process.
 |====================================================================================
-9.  Review the `bootstrap.ign` file
+.  Review the `bootstrap.ign` file
 +
 [[__asciidoctor-preview-87__]]
 [source,nowrap]
 ----
 (openshift) [stack@undercloud ~]$ openstack object save rhte-sj5bt bootstrap.ign --file -| jq "." | less
 ----
-10. Create `.ssh/config` to use `172.16.0.70` as jump host
+. Create `.ssh/config` to use `172.16.0.70` as jump host
 +
 [[__asciidoctor-preview-88__]]
 Content
@@ -1002,14 +1002,14 @@ Host 10.10.*
 |=========================
 |__ |Set permission to 640
 |=========================
-11. Connect to the IP of the bootstrap
+. Connect to the IP of the bootstrap
 +
 [[__asciidoctor-preview-90__]]
 [source,nowrap]
 ----
 (openshift) [stack@undercloud ~]$ ssh core@10.10.0.4
 ----
-12. Review the bootstrap process
+. Review the bootstrap process
 +
 [[__asciidoctor-preview-91__]]
 [source,nowrap]
@@ -1073,14 +1073,14 @@ Jun 28 09:53:05 bootstrap bootkube.sh[1380]: Created "cvo-overrides.yaml" cluste
 At this moment we have to wait till the bootstrap finishes.
 
 [[__asciidoctor-preview-98__]]
-1.  During this wait, open a new terminal and connect to master node
+.  During this wait, open a new terminal and connect to master node
 +
 [[__asciidoctor-preview-99__]]
 [source,nowrap]
 ----
 (openshift) [stack@undercloud ~]$ ssh core@10.10.0.7
 ----
-2.  List the CRI-O pods inside the master
+.  List the CRI-O pods inside the master
 +
 [[__asciidoctor-preview-100__]]
 [source,nowrap]
@@ -1102,7 +1102,7 @@ POD ID              CREATED             STATE               NAME                
 004739b663132       3 minutes ago       Ready               network-operator-6c7d479687-jljvk   openshift-network-operator   0
 55bc77972897a       5 minutes ago       Ready               etcd-member-master-0                openshift-etcd               0
 ----
-3.  Review the `tun0` device
+.  Review the `tun0` device
 +
 [[__asciidoctor-preview-102__]]
 [source,nowrap]
@@ -1128,7 +1128,7 @@ Sample Output
 |=============================================
 |__ |IP Corresponds to the OCP Cluster network
 |=============================================
-4.  Review CNI configuration
+.  Review CNI configuration
 +
 [[__asciidoctor-preview-105__]]
 [source,nowrap]
@@ -1147,7 +1147,7 @@ Sample Output
   "type": "openshift-sdn"
 }
 ----
-5.  Review Multus configuration
+.  Review Multus configuration
 +
 [[__asciidoctor-preview-107__]]
 [source,nowrap]
@@ -1226,7 +1226,7 @@ DEBUG Still waiting for the cluster to initialize: Working towards 4.2.0-0.okd-2
 At this moment we can install the `oc` client and see the installation progress.
 
 [[__asciidoctor-preview-120__]]
-1.  Exit tmux (using `exit` command) and then Download `oc` client
+.  Exit tmux (using `exit` command) and then Download `oc` client
 +
 [[__asciidoctor-preview-121__]]
 [source,nowrap]
@@ -1243,7 +1243,7 @@ Sample Output
                                  Dload  Upload   Total   Spent    Left  Speed
 100 21.6M  100 21.6M    0     0   9.8M      0  0:00:02  0:00:02 --:--:--  9.8M
 ----
-2.  Extract it and copy to `/usr/local/bin`
+.  Extract it and copy to `/usr/local/bin`
 +
 [[__asciidoctor-preview-123__]]
 [source,nowrap]
@@ -1251,7 +1251,7 @@ Sample Output
 (openshift) [stack@undercloud installer]$ tar xfz oc.tar.gz
 (openshift) [stack@undercloud installer]$ sudo cp oc /usr/local/bin/
 ----
-3.  Configure `KUBECONFIG` environment variable and check status
+.  Configure `KUBECONFIG` environment variable and check status
 +
 [[__asciidoctor-preview-124__]]
 [source,nowrap]
@@ -1268,7 +1268,7 @@ Sample Output
 NAME      VERSION                         AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.2.0-0.okd-2019-07-22-195548   True        False         4m44s   Cluster version is 4.2.0-0.okd-2019-07-22-195548
 ----
-4.  List the cluster operators and the status
+.  List the cluster operators and the status
 +
 [[__asciidoctor-preview-126__]]
 [source,nowrap]
