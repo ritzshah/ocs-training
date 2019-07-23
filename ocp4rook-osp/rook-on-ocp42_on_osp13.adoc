@@ -26,11 +26,12 @@ Table of Contents
 ** link:#_download_and_configure_go[Download and configure Go]
 * link:#_openshift_4_2_installation[OpenShift 4.2 installation]
 ** link:#_review_installation_process[Review installation process]
-* link:#_test_basic_functionality[Test basic functionality]
 * link:#rook-ceph-deployment-on-openshift-4[Rook Ceph Deployment on OCP4.x]
-* link:#rook-ceph-storageclass-ceph-rbd[Create Rook storageclass for creating Ceph RBD volumes]
+* link:#rook-ceph-storageclass-ceph-rbd[Create Rook storageclass and Ceph RBD volumes]
 * link:#application_redployment_persistent_rbd[Application Deployment using Persistent Volume (RBD)]
+
 [[_overview]]
+
 Overview
 ~~~~~~~~
 
@@ -1587,7 +1588,7 @@ rados df
 Make sure to `exit` the *toolbox* before continuing.
 
 [[rook-ceph-storageclass-ceph-rbd]]
-=== Create Rook Storage Class for creating Ceph RBD volumes
+=== Create Rook Storage Class and Ceph RBD volumes
 
 In this section you will download *storageclass.yaml* and then create the OCP *storageclass* `rook-ceph-block` that can be used by applications to dynamically claim persistent volumes (*PVCs*). The Ceph pool `replicapool` is created when the OCP *storageclass* is created.
 
@@ -1783,115 +1784,10 @@ postgresql   Bound    pvc-96245077-ad14-11e9-9721-fa163ef6cf04   2Gi        RWO 
 ----
 
 NOTE : Every time you login back to your session or have a new terminal, run the following commands to set environmental parameters.
+----
 . openshiftrc
 cd /home/stack/src/github.com/openshift/installer
 export PATH=~/go/bin/:$PATH GOROOT=~/go/ GOPATH=/home/stack
 export PROJID=$(openstack project show openshift -c id -f value)
 export KUBECONFIG=/home/stack/src/github.com/openshift/installer/rhte/auth/kubeconfig
-
-******************************************************************************
-IGNORE BELOW SECTION :
-******************************************************************************
-[[_test_basic_functionality]]
-Test basic functionality
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-[[__asciidoctor-preview-135__]]
-Now is time to test the basic functionality: create an app.
-
-[[__asciidoctor-preview-136__]]
-1.  Create a new project named `rhte`
-+
-[[__asciidoctor-preview-137__]]
-[source,nowrap]
 ----
-(openshift) [stack@undercloud installer]$ oc new-project rhte
-----
-+
-[[__asciidoctor-preview-138__]]
-Sample Output
-
-[source,nowrap]
-----
-Now using project "rhte" on server "https://api.rhte.example.com:6443".
-
-You can add applications to this project with the 'new-app' command. For example, try:
-
-    oc new-app django-psql-example
-
-to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
-
-    kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
-----
-2.  Create a new sample apps
-+
-[[__asciidoctor-preview-139__]]
-[source,nowrap]
-----
-(openshift) [stack@undercloud installer]$ oc new-app django-psql-example
-----
-+
-[[__asciidoctor-preview-140__]]
-Sample Output
-
-[source,nowrap]
-----
-<<OMITTED>>
---> Creating resources ...
-    secret "django-psql-example" created
-    service "django-psql-example" created
-    route.route.openshift.io "django-psql-example" created
-    imagestream.image.openshift.io "django-psql-example" created
-    buildconfig.build.openshift.io "django-psql-example" created
-    deploymentconfig.apps.openshift.io "django-psql-example" created
-    service "postgresql" created
-    deploymentconfig.apps.openshift.io "postgresql" created
---> Success
-    Access your application via route 'django-psql-example-rhte.apps.rhte.example.com'
-    Build scheduled, use 'oc logs -f bc/django-psql-example' to track its progress.
-    Run 'oc status' to view your app.
-----
-3.  Check the status
-+
-[[__asciidoctor-preview-141__]]
-[source,nowrap]
-----
-(openshift) [stack@undercloud installer]$ watch oc status
-----
-+
-[[__asciidoctor-preview-142__]]
-Sample Output
-
-[source,nowrap]
-----
-In project rhte on server https://api.rhte.example.com:6443
-
-http://django-psql-example-rhte.apps.rhte.example.com (svc/django-psql-example)
-  dc/django-psql-example deploys istag/django-psql-example:latest <-
-    bc/django-psql-example source builds https://github.com/sclorg/django-ex.git on openshift/python:3.6
-      build #1 running for 42 seconds - 0905223: Merge pull request #137 from danmcp/patch-1 (Ben Parees <bparees@users.noreply.github.com>)
-    deployment #1 waiting on image or update
-
-svc/postgresql - 172.30.174.52:5432
-  dc/postgresql deploys openshift/postgresql:10
-    deployment #1 waiting on image or update
-
-View details with 'oc describe <resource>/<name>' or list everything with 'oc get all'.
-----
-+
-[[__asciidoctor-preview-143__]]
-Wait till the process finished.
-4.  Access to the application
-+
-[[__asciidoctor-preview-144__]]
-[source,nowrap]
-----
-(overcloud) [stack@undercloud installer]$ curl -s django-psql-example-rhte.apps.rhte.example.com | grep title
-----
-+
-[[__asciidoctor-preview-145__]]
-[source,nowrap]
-----
-  <title>Welcome to OpenShift</title>
-----
-*****************************************************************************
