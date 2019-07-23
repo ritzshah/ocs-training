@@ -5,7 +5,7 @@ OpenShift 4.2 on OpenStack 13 Installation Lab
 
 [[preamble]]
 [[__asciidoctor-preview-1__]]
-In this lab, you will install OpenShift 4.2 on Red Hat OpenStack 13
+In this lab, you will install Deploying and Managing OpenShift Container Storage with Rook-Ceph Operator on OpenShift 4.2 on Red Hat OpenStack 13.
 
 [[__asciidoctor-preview-2__]]
 Order your lab environment through https://labs.opentlc.com by selecting *Services* → *Catalogs* → *All Services* → *OPENTLC Cloud Infrastructure Labs* → *rhte2019-rook-ocp-osp*.
