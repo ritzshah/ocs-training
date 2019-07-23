@@ -1589,25 +1589,44 @@ Make sure to `exit` the *toolbox* before continuing.
 In this section you will download *storageclass.yaml* and then create the OCP *storageclass* `rook-ceph-block` that can be used by applications to dynamically claim persistent volumes (*PVCs*). The Ceph pool `replicapool` is created when the OCP *storageclass* is created.
 
 ----
-curl -O https://raw.githubusercontent.com/red-hat-storage/ocs-training/master/ocp4rook/storageclass.yaml
+(openshift) [stack@undercloud installer]$ curl -O https://raw.githubusercontent.com/red-hat-storage/ocs-training/master/ocp4rook/storageclass.yaml
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1451  100  1451    0     0   4148      0 --:--:-- --:--:-- --:--:--  4169
 cat  storageclass.yaml
 ----
 
 Notice the `provisioner: ceph.rook.io/block` and that `replicated: size=2` which is a good practice when there are only 3 OSDs. This is because if one *OSD* is down OCP volumes can continue to be created and used.
 
 ----
-oc create -f storageclass.yaml
+(openshift) [stack@undercloud installer]$ oc create -f storageclass.yaml
+cephblockpool.ceph.rook.io/replicapool created
+storageclass.storage.k8s.io/rook-ceph-block created
 ----
 
 Login to *toolbox* pod to run Ceph commands. Compare results for `ceph df` and `rados df` executed in prior section before the new *storageclass* was created. You will see there is now a Ceph pool called `replicapool`. Also, the command `ceph osd pool ls detail` gives you information on how this pool is configured.
 
 ----
-oc -n rook-ceph rsh $toolbox
+(openshift) [stack@undercloud installer]$   oc  -n rook-ceph exec -it rook-ceph-tools bash
 
-ceph df
-rados df
-rados -p replicapool ls
-ceph osd pool ls detail
+[root@rook-ceph-tools /]# ceph df
+GLOBAL:
+    SIZE       AVAIL       RAW USED     %RAW USED
+    19 GiB     7.3 GiB       12 GiB         61.58
+POOLS:
+    NAME            ID     USED     %USED     MAX AVAIL     OBJECTS
+    replicapool     1       0 B         0       3.2 GiB           0
+[root@rook-ceph-tools /]# rados df
+POOL_NAME   USED OBJECTS CLONES COPIES MISSING_ON_PRIMARY UNFOUND DEGRADED RD_OPS RD WR_OPS WR
+replicapool    0       0      0      0                  0       0        0      0  0      0  0
+
+total_objects    0
+total_used       11973M
+total_avail      7470M
+total_space      19443M
+[root@rook-ceph-tools /]# rados -p replicapool ls
+[root@rook-ceph-tools /]# ceph osd pool ls detail
+pool 1 'replicapool' replicated size 2 min_size 1 crush_rule 1 object_hash rjenkins pg_num 100 pgp_num 100 last_change 15 flags hashpspool stripe_width 0 application rbd
 ----
 
 Make sure to `exit` the *toolbox* before continuing.
@@ -1619,20 +1638,19 @@ In this section the `rook-ceph-block` *storageclass* will be used by an OCP appl
 Because the Rails + PostgreSQL deployment uses the `default` *storageclass* you need to modify the current default, gp2, and then make `rook-ceph-block` the default *storageclass*.
 
 ----
-oc get sc
-
-NAME              PROVISIONER             AGE
-gp2 (default)     kubernetes.io/aws-ebs   2d
-rook-ceph-block   ceph.rook.io/block      8m27s
+(openshift) [stack@undercloud installer]$ oc get sc
+NAME                 PROVISIONER            AGE
+rook-ceph-block      ceph.rook.io/block     2m19s
+standard (default)   kubernetes.io/cinder   100m
 ----
 
 Now you want to change which *storageclass* is default.
 
 ----
-oc edit sc gp2
+(openshift) [stack@undercloud installer]$ oc edit sc standard
 ----
 
-Remove this portion shown below from *storageclass* `gp2`. Make sure to note *EXACTLY* where this annotations is located in the *storageclass* (copying this portion to clipboard would be a good idea). The editing tool is `vi` when using *oc edit*. Make sure to save your changes before exiting `:wq!`.
+Remove this portion shown below from *storageclass* `standard`. Make sure to note *EXACTLY* where this annotations is located in the *storageclass* (copying this portion to clipboard would be a good idea). The editing tool is `vi` when using *oc edit*. Make sure to save your changes before exiting `:wq!`.
 
 ----
   annotations:
@@ -1642,53 +1660,81 @@ Remove this portion shown below from *storageclass* `gp2`. Make sure to note *EX
 Add the removed portion to `rook-ceph-block` in same place in the file so it will become the `default` *storageclass*. Make sure to save your changes before exiting `:wq!`.
 
 ----
-oc edit sc rook-ceph-block
+(openshift) [stack@undercloud installer]$ oc edit sc rook-ceph-block
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "true"
+  creationTimestamp: "2019-07-23T06:33:54Z"
+  name: rook-ceph-block
+  resourceVersion: "31419"
+  selfLink: /apis/storage.k8s.io/v1/storageclasses/rook-ceph-block
+  uid: d7d1951f-ad13-11e9-9721-fa163ef6cf04
+parameters:
+  blockPool: replicapool
+  clusterNamespace: rook-ceph
+  fstype: xfs
+provisioner: ceph.rook.io/block
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
 ----
 
 After editing *storageclass* `rook-ceph-block` the result should be similar to below and `rook-ceph-block` should now be the `default` *storageclass*.
 
 ----
-oc get sc rook-ceph-block -o yaml
-
+(openshift) [stack@undercloud installer]$ oc get sc rook-ceph-block -o yaml
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   annotations:
-    storageclass.kubernetes.io/is-default-class: "true"
-  creationTimestamp: "2019-04-26T22:24:29Z"
+    storageclass.beta.kubernetes.io/is-default-class: "true"
+  creationTimestamp: "2019-07-23T06:33:54Z"
   name: rook-ceph-block
-...omitted...
+  resourceVersion: "32144"
+  selfLink: /apis/storage.k8s.io/v1/storageclasses/rook-ceph-block
+  uid: d7d1951f-ad13-11e9-9721-fa163ef6cf04
+parameters:
+  blockPool: replicapool
+  clusterNamespace: rook-ceph
+  fstype: xfs
+provisioner: ceph.rook.io/block
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
 ----
 
 Validate that `rook-ceph-block` is now the default *storageclass* before starting the OCP application deployment.
 
 ----
-oc get sc
-
-NAME                        PROVISIONER             AGE
-gp2                         kubernetes.io/aws-ebs   2d1h
-rook-ceph-block (default)   ceph.rook.io/block      10m32s
+(openshift) [stack@undercloud installer]$ oc get sc
+NAME                        PROVISIONER            AGE
+rook-ceph-block (default)   ceph.rook.io/block     4m46s
+standard                    kubernetes.io/cinder   102m
 ----
 
 Now you are ready to start the Rails + PostgreSQL deployment and monitor the deployment.
 
 ----
-oc new-project my-database-app
-oc new-app rails-pgsql-persistent -p VOLUME_CAPACITY=5Gi
+(openshift) [stack@undercloud installer]$ oc new-project my-database-app
+(openshift) [stack@undercloud installer]$ oc new-app rails-pgsql-persistent -p VOLUME_CAPACITY=5Gi
 ----
 
 After the deployment is started you can monitor with these commands.
 
 ----
-oc status
-oc get pvc -n my-database-app
-watch oc get pods -n my-database-app
+(openshift) [stack@undercloud installer]$ oc status
+(openshift) [stack@undercloud installer]$ oc get pvc -n my-database-app
+(openshift) [stack@undercloud installer]$ watch oc get pods -n my-database-app
 ----
 
 This step could take 5 or more minutes. Wait until there are 2 pods in `Running` STATUS and 4 pods in `Completed` STATUS as shown below.
 
 ----
-oc get pods -n my-database-app
+(openshift) [stack@undercloud installer]$ oc get pods -n my-database-app
 
 NAME                                READY   STATUS      RESTARTS   AGE
 postgresql-1-deploy                 0/1     Completed   0          5m48s
@@ -1708,35 +1754,27 @@ NAME                     HOST/PORT                                              
 rails-pgsql-persistent   rails-pgsql-persistent-my-database-app.apps.cluster-a26e.sandbox449.opentlc.com          rails-pgsql-persistent
 ----
 
-Copy your `HOST/PORT` to a browser window to create articles. You will need to append `/articles` to the end.
-
-*Example link:*  http://rails-pgsql-persistent-my-database-app.apps.cluster-a26e.sandbox449.opentlc.com /articles
-
-Enter the `username` and `password` below to create articles and comments. The articles and comments are saved in a PostgreSQL database which stores its table spaces on the Ceph RBD volume provisioned using the `rook-ceph-block` *storagclass* during the application deployment.
-
-----
-username: openshift
-password: secret
-----
-
 Lets now take another look at the Ceph `replicapool` created by the `rook-ceph-block` *storageclass*. Log into the *toolbox* pod again.
 
 ----
-oc -n rook-ceph rsh $toolbox
+oc  -n rook-ceph exec -it rook-ceph-tools bash
 ----
 
 Run the same Ceph commands as before the application deployment and compare to results in prior section. Notice the number of objects in `replicapool` now.
 
 ----
-ceph df
-rados df
-rados -p replicapool ls | grep pvc
+[root@rook-ceph-tools /]# ceph df
+[root@rook-ceph-tools /]# rados df
+[root@rook-ceph-tools /]# rados -p replicapool ls |grep pvc
+rbd_id.pvc-96245077-ad14-11e9-9721-fa163ef6cf04
 ----
 
 Make sure to `exit` the *toolbox*. Validate the OCP *PersistentVolume* (PV) name is the same name as the volume name in the Ceph `replicapool`.
 
 ----
-oc get pvc -n my-database-app
+(openshift) [stack@undercloud installer]$ oc get pvc -n my-database-app
+NAME         STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS      AGE
+postgresql   Bound    pvc-96245077-ad14-11e9-9721-fa163ef6cf04   2Gi        RWO            rook-ceph-block   8m31s
 ----
 
 
