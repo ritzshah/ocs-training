@@ -1,6 +1,6 @@
 [[wrapper]]
 [[__asciidoctor-preview-0__]]
-Rook-Ceph on OpenShift 4.2 on OpenStack 13 Installation Lab
+OpenShift 4.2 on OpenStack 13 Installation Lab
 ----------------------------------------------
 
 [[preamble]]
