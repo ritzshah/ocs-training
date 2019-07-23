@@ -27,7 +27,9 @@ Table of Contents
 * link:#_openshift_4_2_installation[OpenShift 4.2 installation]
 ** link:#_review_installation_process[Review installation process]
 * link:#_test_basic_functionality[Test basic functionality]
-
+* link:#rook-ceph-deployment-on-openshift-4[Rook Ceph Deployment on OCP4.x]
+* link:#rook-ceph-storageclass-ceph-rbd[Create Rook storageclass for creating Ceph RBD volumes]
+* link:#application_redployment_persistent_rbd[Application Deployment using Persistent Volume (RBD)]
 [[_overview]]
 Overview
 ~~~~~~~~
@@ -1584,7 +1586,8 @@ rados df
 
 Make sure to `exit` the *toolbox* before continuing.
 
-=== Create Rook storageclass for creating Ceph RBD volumes
+[[rook-ceph-storageclass-ceph-rbd]]
+=== Create Rook Storage Class for creating Ceph RBD volumes
 
 In this section you will download *storageclass.yaml* and then create the OCP *storageclass* `rook-ceph-block` that can be used by applications to dynamically claim persistent volumes (*PVCs*). The Ceph pool `replicapool` is created when the OCP *storageclass* is created.
 
@@ -1632,6 +1635,7 @@ pool 1 'replicapool' replicated size 2 min_size 1 crush_rule 1 object_hash rjenk
 
 Make sure to `exit` the *toolbox* before continuing.
 
+[[application_redployment_persistent_rbd]]
 == Using `rook-ceph-block` *storageclass* by an OCP application as persistent storage.
 
 In this section the `rook-ceph-block` *storageclass* will be used by an OCP application + database deployment to create persistent storage. The persistent storage will be a Ceph RBD (RADOS Block Device) volume (object) in the pool=`replicapool`.
@@ -1778,7 +1782,12 @@ NAME         STATUS   VOLUME                                     CAPACITY   ACCE
 postgresql   Bound    pvc-96245077-ad14-11e9-9721-fa163ef6cf04   2Gi        RWO            rook-ceph-block   8m31s
 ----
 
-
+NOTE : Every time you login back to your session or have a new terminal, run the following commands to set environmental parameters.
+. openshiftrc
+cd /home/stack/src/github.com/openshift/installer
+export PATH=~/go/bin/:$PATH GOROOT=~/go/ GOPATH=/home/stack
+export PROJID=$(openstack project show openshift -c id -f value)
+export KUBECONFIG=/home/stack/src/github.com/openshift/installer/rhte/auth/kubeconfig
 
 ******************************************************************************
 IGNORE BELOW SECTION :
