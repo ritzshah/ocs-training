@@ -1740,14 +1740,10 @@ This step could take 5 or more minutes. Wait until there are 2 pods in `Running`
 
 ----
 (openshift) [stack@undercloud installer]$ oc get pods -n my-database-app
-
-NAME                                READY   STATUS      RESTARTS   AGE
-postgresql-1-deploy                 0/1     Completed   0          5m48s
-postgresql-1-lf7qt                  1/1     Running     0          5m40s
-rails-pgsql-persistent-1-build      0/1     Completed   0          5m49s
-rails-pgsql-persistent-1-deploy     0/1     Completed   0          3m36s
-rails-pgsql-persistent-1-hook-pre   0/1     Completed   0          3m28s
-rails-pgsql-persistent-1-pjh6q      1/1     Running     0          3m14s
+NAME                             READY   STATUS      RESTARTS   AGE
+postgresql-1-deploy              0/1     Completed   0          8h
+postgresql-1-j6trl               1/1     Running     0          8h
+rails-pgsql-persistent-1-build   0/1     Evicted     0          8h
 ----
 
 Once the deployment is complete you can now test the application and the persistent storage on Ceph. Your `HOST/PORT` will be different.
