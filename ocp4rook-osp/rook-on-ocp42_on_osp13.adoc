@@ -51,6 +51,9 @@ For clusters that use *RHCOS* for all machines, updating, or upgrading, *OpenShi
 Architecture
 ~~~~~~~~~~~~
 
+.Ceph deployed on OpenShift using Rook
+image::Rook_diagram_4.png[]
+
 [[_servers]]
 Servers
 ^^^^^^^
