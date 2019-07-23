@@ -708,18 +708,23 @@ EOF
 (openshift) [stack@undercloud installer]$ mkdir rhte/
 (openshift) [stack@undercloud installer]$ cp install-config.yaml rhte/
 ----
+
+6. Incase you are starting from here, pls. follow this before starting the installation.
 +
-Incase you are starting from here, pls. follow this before starting the installation.
+[source,nowrap]
+----
 [stack@undercloud openshift]$ . openshiftrc
 (openshift) [stack@undercloud openshift]$ cd /home/stack/src/github.com/openshift/installer
 (openshift) [stack@undercloud installer]$ export PATH=~/go/bin/:$PATH GOROOT=~/go/ GOPATH=/home/stack
 (openshift) [stack@undercloud installer]$ export PROJID=$(openstack project show openshift -c id -f value)
 (openshift) [stack@undercloud installer]$ export KUBECONFIG=/home/stack/src/github.com/openshift/installer/rhte/auth/kubeconfig
 (openshift) [stack@undercloud installer]$ bin/openshift-install version
+----
 +
 Now run the cluster installation command in a tmux session. This should take around 50 mints.:
 +
 [source,nowrap]
+----
 (openshift) [stack@undercloud installer]$ tmux
 (openshift) [stack@undercloud installer]$ time bin/openshift-install --log-level=debug create cluster --dir rhte
 ----
