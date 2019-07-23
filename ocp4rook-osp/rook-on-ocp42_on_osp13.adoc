@@ -7,7 +7,7 @@ Rook-Ceph Operator on OpenShift 4.2 on OpenStack 13 Installation Lab
 In this lab, you will deploy and manage OpenShift Container Storage with Rook-Ceph Operator on OpenShift 4.2 on Red Hat OpenStack 13.
 
 [[__asciidoctor-preview-2__]]
-Order your lab environment through https://labs.opentlc.com by selecting *Services* → *Catalogs* → *All Services* → *OPENTLC Cloud Infrastructure Labs* → *rhte2019-rook-ocp-osp*.
+Order your lab environment through https://labs.opentlc.com by selecting *Services* → *Catalogs* → *All Services* → *OPENTLC Cloud Infrastructure Labs* → *rhte2019-ocp-osp*.
 
 [[toc]]
 [[toctitle]]
