@@ -771,7 +771,7 @@ Review installation process
 Open a new session to `undercloud` server.
 
 [[__asciidoctor-preview-67__]]
-.  Review created networks during installation
+. Review created networks during installation
 +
 [[__asciidoctor-preview-68__]]
 [source,nowrap]
@@ -791,7 +791,8 @@ Sample Output
 | c96a5d89-f005-47b6-ae74-fd24aba05303 | rhte-sj5bt-openshift | 99665475-bd60-4359-afc3-f637aee2e210, aea8fbce-66f0-4900-927d-518631bf77a3 |
 +--------------------------------------+----------------------+----------------------------------------------------------------------------+
 ----
-.  Review created subnets during installation
++
+. Review created subnets during installation
 +
 [[__asciidoctor-preview-70__]]
 [source,nowrap]
@@ -811,7 +812,8 @@ Sample Output
 | aea8fbce-66f0-4900-927d-518631bf77a3 | rhte-sj5bt-nodes   | c96a5d89-f005-47b6-ae74-fd24aba05303 | 10.10.0.0/17   |
 +--------------------------------------+--------------------+--------------------------------------+----------------+
 ----
-.  Review the servers created
++
+. Review the servers created
 +
 [[__asciidoctor-preview-72__]]
 [source,nowrap]
@@ -858,7 +860,6 @@ Sample Output
 | bf110af5-be2f-4efc-a957-c3145aab49e8 | rhte-sj5bt-worker |                        | d4ca6cd93855497c90abb074aef473b5 |
 +--------------------------------------+-------------------+------------------------+----------------------------------+
 ----
-+
 [[__asciidoctor-preview-77__]]
 [cols=",",]
 |====================================================================================================
