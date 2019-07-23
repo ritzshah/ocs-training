@@ -1,7 +1,7 @@
 [[wrapper]]
 [[__asciidoctor-preview-0__]]
-Deploying and Managing OpenShift Container Storage with Rook-Ceph Operator on OpenShift 4.2 on OpenStack 13 Lab
------------------------------------------------------------------------------------------------------------------------------
+Rook-Ceph on OpenShift 4.2 on OpenStack 13 Installation Lab
+----------------------------------------------
 
 [[preamble]]
 [[__asciidoctor-preview-1__]]
