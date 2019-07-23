@@ -1,14 +1,14 @@
 [[wrapper]]
 [[__asciidoctor-preview-0__]]
-OpenShift 4.2 on OpenStack 13 Installation Lab
+Deploying and Managing OpenShift Container Storage with Rook-Ceph Operator on OpenShift 4.2 on OpenStack 13
 ----------------------------------------------
 
 [[preamble]]
 [[__asciidoctor-preview-1__]]
-In this lab, you will install OpenShift 4.2 on Red Hat OpenStack 13
+In this lab, you will deploying and managing OpenShift Container Storage with Rook-Ceph Operator on OpenShift 4.2 on OpenStack 13
 
 [[__asciidoctor-preview-2__]]
-Order your lab environment through https://labs.opentlc.com by selecting *Services* → *Catalogs* → *All Services* → *OPENTLC Cloud Infrastructure Labs* → *rhte2019-ocp-osp*.
+Order your lab environment through https://labs.opentlc.com by selecting *Services* → *Catalogs* → *All Services* → *OPENTLC Cloud Infrastructure Labs* → *rhte2019-rook-ocp-osp*.
 
 [[toc]]
 [[toctitle]]
@@ -34,6 +34,9 @@ Table of Contents
 
 Overview
 ~~~~~~~~
+
+.Ceph deployed on OpenShift using Rook
+image::Rook_diagram_4.png[]
 
 [[__asciidoctor-preview-3__]]
 *OpenShift Container Platform* is a platform for developing and running containerized applications. It is designed to allow applications and the data centers that support them to expand from just a few machines and applications to thousands of machines that serve millions of clients.
