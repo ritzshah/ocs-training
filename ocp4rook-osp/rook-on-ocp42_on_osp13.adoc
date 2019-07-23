@@ -1157,7 +1157,7 @@ Sample Output
 ----
 { "name": "multus-cni-network", "type": "multus", "namespaceIsolation": true, "logLevel": "verbose", "kubeconfig": "/etc/kubernetes/cni/net.d/multus.d/multus.kubeconfig", "delegates": [ { "cniVersion": "0.3.1", "name": "openshift-sdn", "type": "openshift-sdn" } ] }
 ----
-+
+
 [[__asciidoctor-preview-109__]]
 At this moment you can run `journalctl -f` to see the installation/configuration progress on the master node.
 
@@ -1207,11 +1207,6 @@ DEBUG Destroy complete! Resources: 3 destroyed.
 INFO Waiting up to 30m0s for the cluster at https://api.rhte.example.com:6443 to initialize...
 DEBUG Still waiting for the cluster to initialize: Working towards 4.2.0-0.okd-2019-06-28-044257: 85% complete
 ----
-
-[[__asciidoctor-preview-117__]]
-+
-
-[[__asciidoctor-preview-118__]]
 [cols=",",]
 |====================================================================================================================================================================================================================================================================
 |__ |Ignore errors similar to "Could not update servicemonitor "openshift-service-catalog-controller-manager-operator/openshift-service-catalog-controller-manager-operator" (373 of 397): the server does not recognize this resource, check extension API servers "
