@@ -980,13 +980,7 @@ Sample Output
 |====================================================================================
 |__ |This files are going to be used by RHCOS during the ignition disks boot process.
 |====================================================================================
-.  Review the `bootstrap.ign` file
-+
-[[__asciidoctor-preview-87__]]
-[source,nowrap]
-----
-(openshift) [stack@undercloud ~]$ openstack object save rhte-sj5bt bootstrap.ign --file -| jq "." | less
-----
+
 . Create `.ssh/config` to use `172.16.0.70` as jump host
 +
 [[__asciidoctor-preview-88__]]
@@ -997,7 +991,7 @@ Content
 Host 10.10.*
    ProxyJump core@172.16.0.70
 ----
-+
+
 [[__asciidoctor-preview-89__]]
 [cols=",",]
 |=========================
