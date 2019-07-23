@@ -709,7 +709,7 @@ EOF
 (openshift) [stack@undercloud installer]$ cp install-config.yaml rhte/
 ----
 
-6. Incase you are starting from here, pls. follow this before starting the installation.
+6. Incase you are starting from after creating a new lab, pls. follow this before starting the installation.
 +
 [source,nowrap]
 ----
@@ -756,7 +756,7 @@ DEBUG     Loading "Install Config"...
 DEBUG     Loading "Kubeconfig Admin Client"...
 <<OMITTED>>
 ----
-+
+
 [[__asciidoctor-preview-65__]]
 [cols=",",]
 |===============================================================================================================
