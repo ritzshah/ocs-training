@@ -386,6 +386,21 @@ EOF
 
 == Installation
 
+. Install tmux and execute it :
++
+[%nowrap]
+----
+sudo yum install tmux -y
+tmux
+----
+
+. Update install_requirements script to reflect correct podman package.
++
+[%nowrap]
+----
+sed -i 's/podman/podman-1.2-2.git3bd528e.el7/' 01_install_requirements.sh
+----
+
 . Install required packages
 +
 [%nowrap]
@@ -552,9 +567,10 @@ a53344a1f236  quay.io/metal3-io/ironic:master            /bin/runmariadb       3
 +
 [%nowrap]
 ----
-[kni@provisioner dev-scripts]$ sudo podman exec ironic sed -i 's/conductor automated_clean true/conductor automated_clean false/' /bin/runironic
-[kni@provisioner dev-scripts]$ sudo podman exec ironic sed -i '58icrudini --set /etc/ironic/ironic.conf ipmi min_command_interval 15' /bin/runironic
-[kni@provisioner dev-scripts]$ sudo podman restart ironic
+[kni@provisioner dev-scripts]$ sudo podman exec ironic-conductor sed -i '16icrudini --set /etc/ironic/ironic.conf conductor automated_clean false' /bin/runironic-conductor
+[kni@provisioner dev-scripts]$ sudo podman exec ironic-conductor sed -i '16icrudini --set /etc/ironic/ironic.conf ipmi min_command_interval 15' /bin/runironic-conductor
+[kni@provisioner dev-scripts]$ sudo podman restart ironic-conductor
+[kni@provisioner dev-scripts]$ sudo podman ps
 ----
 +
 .Sample Output
